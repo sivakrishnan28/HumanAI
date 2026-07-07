@@ -4,8 +4,7 @@ const db = new sqlite3.Database("./src/database/humanai.db", (err) => {
 
     if (err) {
         console.log("❌ Database Error :", err.message);
-    }
-    else {
+    } else {
         console.log("✅ SQLite Connected");
     }
 
@@ -32,18 +31,14 @@ db.serialize(() => {
 function saveMessage(sender, message) {
 
     db.run(
-        `INSERT INTO chats(sender,message) VALUES(?,?)`,
+        `INSERT INTO chats(sender, message) VALUES(?, ?)`,
         [sender, message],
         (err) => {
 
             if (err) {
-
                 console.log("❌ Save Failed");
-
             } else {
-
                 console.log("💾 Message Saved");
-
             }
 
         }
@@ -51,7 +46,38 @@ function saveMessage(sender, message) {
 
 }
 
+// 🔥 NEW FUNCTION
+function getRecentMessages(sender) {
+
+    return new Promise((resolve, reject) => {
+
+        db.all(
+            `SELECT message
+             FROM chats
+             WHERE sender = ?
+             ORDER BY id DESC
+             LIMIT 10`,
+            [sender],
+            (err, rows) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                // Oldest → Newest order
+                resolve(rows.reverse());
+
+            }
+
+        );
+
+    });
+
+}
+
 module.exports = {
     db,
-    saveMessage
+    saveMessage,
+    getRecentMessages
 };

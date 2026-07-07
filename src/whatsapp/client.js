@@ -1,16 +1,11 @@
-const { generateReply } = require("../ai/replyEngine");
-const { getLastMessages } = require("../ai/memory");
+const ollamaModule = require("../ai/ollama");
+console.log("OLLAMA:", ollamaModule);
 
-console.log("\n📚 Previous Messages");
-
-history.forEach((m) => {
-
-    console.log("•", m.message);
-
-});
+const { askOllama } = require("../ai/ollama");
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
-const { saveMessage } = require("../database/database");
+const { saveMessage, getRecentMessages } = require("../database/database");
+const { generateReply } = require("../ai/replyEngine");
 
 const {
     default: makeWASocket,
@@ -25,48 +20,51 @@ async function startWhatsApp() {
     const sock = makeWASocket({
         auth: state,
         logger: P({ level: "silent" }),
-        browser: ["HumanAI", "Chrome", "1.0.0"]
+        browser: ["HumanAI", "Chrome", "1.0.0"],
     });
 
-    // Save credentials
+    // Save auth credentials
     sock.ev.on("creds.update", saveCreds);
 
-    // Connection events
+    // Connection updates
     sock.ev.on("connection.update", ({ connection, qr, lastDisconnect }) => {
 
         if (qr) {
             console.clear();
-            console.log("📱 Scan this QR with WhatsApp\n");
+            console.log("📱 Scan this QR using WhatsApp\n");
             qrcode.generate(qr, { small: true });
         }
 
         if (connection === "connecting") {
-            console.log("🔄 Connecting...");
+            console.log("🔄 Connecting to WhatsApp...");
         }
 
         if (connection === "open") {
-            console.log("✅ WhatsApp Connected");
+            console.log("✅ WhatsApp Connected Successfully!");
         }
 
         if (connection === "close") {
 
-            const shouldReconnect =
-                lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log("❌ WhatsApp Disconnected");
 
-            console.log("❌ Connection Closed");
+            const shouldReconnect =
+                lastDisconnect?.error?.output?.statusCode !==
+                DisconnectReason.loggedOut;
 
             if (shouldReconnect) {
-                console.log("🔄 Reconnecting...");
+                console.log("🔄 Reconnecting in 3 seconds...");
+
                 setTimeout(() => {
                     startWhatsApp();
                 }, 3000);
+            } else {
+                console.log("🚫 Logged Out");
             }
-
         }
 
     });
 
-    // Receive Messages
+    // Incoming Messages
     sock.ev.on("messages.upsert", async ({ messages, type }) => {
 
         if (type !== "notify") return;
@@ -90,41 +88,50 @@ async function startWhatsApp() {
 
         if (!text) return;
 
-        console.log("\n==================================");
+        console.log("\n======================================");
         console.log("📩 New Message");
         console.log("👤 From :", sender);
         console.log("💬 Text :", text);
 
-        // Save message
+        // Save message to database
         saveMessage(sender, text);
 
-        const reply = generateReply(text);
+        const history = await getRecentMessages(sender);
 
-        const lower = text.toLowerCase();
+        const historyText = history
+        .map((msg) => msg.message)
+        .join("\n");
 
-        if (lower.includes("hi") || lower.includes("hello")) {
-            reply = "Hey da 👋";
-        }
-        else if (lower.includes("how are you")) {
-            reply = "Nalla iruken da 😄";
-        }
-        else if (lower.includes("saptiya")) {
-            reply = "Innum illa da 😅";
-        }
-        else if (lower.includes("bye")) {
-            reply = "Bye da 👋";
-        }
-        else {
-            reply = "Seri da, konjam nerathula reply panren 🙂";
-        }
+        console.log("\n📚 Previous Messages");
+
+        history.forEach((msg) => {
+        console.log("•", msg.message);
+     });
+
+        // Generate reply suggestion
+        const prompt = `
+        You are Siva.
+
+        Reply in Tanglish.
+
+        Keep replies short.
+
+        Previous Conversation:
+
+        ${historyText}
+
+        Current Message:
+
+        ${text}
+
+        Reply:
+        `;
+
+const reply = await askOllama(prompt);
 
         console.log("🤖 Suggested Reply :", reply);
-        console.log("💾 Saved to Database");
-        console.log("==================================\n");
-
-        // NOTE:
-        // This only shows a suggested reply.
-        // It does NOT automatically send messages.
+        console.log("💾 Message Saved Successfully");
+        console.log("======================================\n");
 
     });
 
