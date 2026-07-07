@@ -1,3 +1,6 @@
 exports.home = (req, res) => {
-    res.send("Welcome to HumanAI 🚀");
+    res.json({
+        success: true,
+        message: "HumanAI API Running 🚀"
+    });
 };
