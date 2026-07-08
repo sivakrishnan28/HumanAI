@@ -1,11 +1,13 @@
-const ollamaModule = require("../ai/ollama");
-console.log("OLLAMA:", ollamaModule);
-
-const { askOllama } = require("../ai/ollama");
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
-const { saveMessage, getRecentMessages } = require("../database/database");
-const { generateReply } = require("../ai/replyEngine");
+
+const {
+    saveMessage,
+    saveAIReply,
+    getRecentMessages
+} = require("../database/database");
+
+const { askOllama } = require("../ai/ollama");
 
 const {
     default: makeWASocket,
@@ -60,6 +62,7 @@ async function startWhatsApp() {
             } else {
                 console.log("🚫 Logged Out");
             }
+
         }
 
     });
@@ -93,43 +96,47 @@ async function startWhatsApp() {
         console.log("👤 From :", sender);
         console.log("💬 Text :", text);
 
-        // Save message to database
+        // Save incoming message
         saveMessage(sender, text);
 
+        // Load previous messages
         const history = await getRecentMessages(sender);
 
         const historyText = history
-        .map((msg) => msg.message)
-        .join("\n");
+            .map(msg => msg.message)
+            .join("\n");
 
         console.log("\n📚 Previous Messages");
 
-        history.forEach((msg) => {
-        console.log("•", msg.message);
-     });
+        history.forEach(msg => {
+            console.log("•", msg.message);
+        });
 
-        // Generate reply suggestion
+        // AI Prompt
         const prompt = `
-        You are Siva.
+You are Siva.
 
-        Reply in Tanglish.
+Reply in Tanglish.
 
-        Keep replies short.
+Keep replies short and natural.
 
-        Previous Conversation:
+Previous Conversation:
+${historyText}
 
-        ${historyText}
+Current Message:
+${text}
 
-        Current Message:
+Reply:
+`;
 
-        ${text}
+        // Ask Ollama
+        const reply = await askOllama(prompt);
 
-        Reply:
-        `;
-
-const reply = await askOllama(prompt);
+        // Save AI reply
+        saveAIReply(sender, text, reply);
 
         console.log("🤖 Suggested Reply :", reply);
+        console.log("🤖 AI Reply Saved");
         console.log("💾 Message Saved Successfully");
         console.log("======================================\n");
 

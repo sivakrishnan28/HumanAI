@@ -14,19 +14,20 @@ const db = new sqlite3.Database("./src/database/humanai.db", (err) => {
 db.serialize(() => {
 
     db.run(`
-        CREATE TABLE IF NOT EXISTS chats (
+    CREATE TABLE IF NOT EXISTS ai_replies (
 
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            sender TEXT,
+        sender TEXT,
 
-            message TEXT,
+        message TEXT,
 
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        reply TEXT,
 
-        )
-    `);
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
+    )
+`);
 });
 
 // Save message
@@ -41,6 +42,25 @@ function saveMessage(sender, message) {
                 console.log("❌ Save Failed");
             } else {
                 console.log("💾 Message Saved");
+            }
+
+        }
+    );
+
+}
+
+function saveAIReply(sender, message, reply) {
+
+    db.run(
+        `INSERT INTO ai_replies(sender, message, reply)
+         VALUES(?, ?, ?)`,
+        [sender, message, reply],
+        (err) => {
+
+            if (err) {
+                console.log("❌ AI Reply Save Failed");
+            } else {
+                console.log("🤖 AI Reply Saved");
             }
 
         }
@@ -123,12 +143,68 @@ function getTotalContacts() {
 
 }
 
+
+function getLatestMessages() {
+
+    return new Promise((resolve, reject) => {
+
+        db.all(
+            `SELECT sender, message, created_at
+             FROM chats
+             WHERE sender NOT LIKE '%newsletter%'
+             AND sender != 'status@broadcast'
+             ORDER BY id DESC
+             LIMIT 10`,
+            (err, rows) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(rows);
+
+            }
+
+        );
+
+    });
+
+    function getLatestAIReplies() {
+
+    return new Promise((resolve, reject) => {
+
+        db.all(
+            `SELECT sender, message, reply, created_at
+             FROM ai_replies
+             ORDER BY id DESC
+             LIMIT 10`,
+            (err, rows) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(rows);
+
+            }
+
+        );
+
+    });
+
+}
+
+}
+
 module.exports = {
     db,
     saveMessage,
+    saveAIReply,
     getRecentMessages,
     getTotalMessages,
-    getTotalContacts
+    getTotalContacts,
+    getLatestMessages,
+    getLatestAIReplies
 };
-
-getLatestMessages()

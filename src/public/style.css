@@ -58,3 +58,25 @@ h1{
     transform:translateY(-8px);
 
 }
+
+.latestMessages{
+
+    margin-top:40px;
+
+    background:#1e293b;
+
+    padding:25px;
+
+    border-radius:15px;
+
+}
+
+.message{
+
+    padding:12px;
+
+    margin-top:10px;
+
+    border-bottom:1px solid #3a5d91;
+
+}
