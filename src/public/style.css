@@ -79,4 +79,30 @@ h1{
 
     border-bottom:1px solid #3a5d91;
 
+}.latestReplies{
+
+    margin-top:40px;
+
+    background:#1e293b;
+
+    padding:25px;
+
+    border-radius:15px;
+
+}
+
+.reply{
+
+    padding:12px;
+
+    margin-top:10px;
+
+    border-bottom:1px solid #334155;
+
+}
+
+.reply p{
+
+    margin:6px 0;
+
 }

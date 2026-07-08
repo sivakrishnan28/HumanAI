@@ -10,27 +10,44 @@ const db = new sqlite3.Database("./src/database/humanai.db", (err) => {
 
 });
 
-// Create table
+// Create Tables
 db.serialize(() => {
 
+    // Chats Table
     db.run(`
-    CREATE TABLE IF NOT EXISTS ai_replies (
+        CREATE TABLE IF NOT EXISTS chats (
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        sender TEXT,
+            sender TEXT,
 
-        message TEXT,
+            message TEXT,
 
-        reply TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 
-    )
-`);
+    // AI Replies Table
+    db.run(`
+        CREATE TABLE IF NOT EXISTS ai_replies (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            sender TEXT,
+
+            message TEXT,
+
+            reply TEXT,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+
+        )
+    `);
+
 });
 
-// Save message
+// Save Incoming Message
 function saveMessage(sender, message) {
 
     db.run(
@@ -49,6 +66,7 @@ function saveMessage(sender, message) {
 
 }
 
+// Save AI Reply
 function saveAIReply(sender, message, reply) {
 
     db.run(
@@ -68,7 +86,7 @@ function saveAIReply(sender, message, reply) {
 
 }
 
-// Get last 10 messages of a contact
+// Get Previous Messages
 function getRecentMessages(sender) {
 
     return new Promise((resolve, reject) => {
@@ -90,20 +108,19 @@ function getRecentMessages(sender) {
                 resolve(rows.reverse());
 
             }
-
         );
 
     });
 
 }
 
-// Get total messages
+// Total Messages
 function getTotalMessages() {
 
     return new Promise((resolve, reject) => {
 
         db.get(
-            "SELECT COUNT(*) AS total FROM chats",
+            `SELECT COUNT(*) AS total FROM chats`,
             (err, row) => {
 
                 if (err) {
@@ -120,13 +137,13 @@ function getTotalMessages() {
 
 }
 
-// Get total unique contacts
+// Total Contacts
 function getTotalContacts() {
 
     return new Promise((resolve, reject) => {
 
         db.get(
-            "SELECT COUNT(DISTINCT sender) AS total FROM chats",
+            `SELECT COUNT(DISTINCT sender) AS total FROM chats`,
             (err, row) => {
 
                 if (err) {
@@ -143,7 +160,7 @@ function getTotalContacts() {
 
 }
 
-
+// Latest Messages
 function getLatestMessages() {
 
     return new Promise((resolve, reject) => {
@@ -165,12 +182,14 @@ function getLatestMessages() {
                 resolve(rows);
 
             }
-
         );
 
     });
 
-    function getLatestAIReplies() {
+}
+
+// Latest AI Replies
+function getLatestAIReplies() {
 
     return new Promise((resolve, reject) => {
 
@@ -189,12 +208,9 @@ function getLatestMessages() {
                 resolve(rows);
 
             }
-
         );
 
     });
-
-}
 
 }
 

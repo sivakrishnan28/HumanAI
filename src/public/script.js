@@ -51,14 +51,38 @@ async function loadMessages(){
 
 }
 
+async function loadReplies(){
+
+    const response = await fetch("/api/replies");
+
+    const replies = await response.json();
+
+    const container = document.getElementById("latestReplies");
+
+    container.innerHTML = "";
+
+    replies.forEach(item => {
+
+        container.innerHTML += `
+            <div class="reply">
+                <strong>💬 ${item.message}</strong>
+                <p>🤖 ${item.reply}</p>
+                <small>${item.created_at}</small>
+            </div>
+        `;
+
+    });
+
+}
+
 loadDashboard();
-
 loadMessages();
+loadReplies();
 
-setInterval(()=>{
+setInterval(() => {
 
     loadDashboard();
-
     loadMessages();
+    loadReplies();
 
-},5000);
+}, 5000);
