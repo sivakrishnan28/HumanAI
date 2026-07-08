@@ -10,6 +10,7 @@ const db = new sqlite3.Database("./src/database/humanai.db", (err) => {
 
 });
 
+// Create table
 db.serialize(() => {
 
     db.run(`
@@ -28,6 +29,7 @@ db.serialize(() => {
 
 });
 
+// Save message
 function saveMessage(sender, message) {
 
     db.run(
@@ -46,7 +48,7 @@ function saveMessage(sender, message) {
 
 }
 
-// 🔥 NEW FUNCTION
+// Get last 10 messages of a contact
 function getRecentMessages(sender) {
 
     return new Promise((resolve, reject) => {
@@ -65,7 +67,6 @@ function getRecentMessages(sender) {
                     return;
                 }
 
-                // Oldest → Newest order
                 resolve(rows.reverse());
 
             }
@@ -76,8 +77,58 @@ function getRecentMessages(sender) {
 
 }
 
+// Get total messages
+function getTotalMessages() {
+
+    return new Promise((resolve, reject) => {
+
+        db.get(
+            "SELECT COUNT(*) AS total FROM chats",
+            (err, row) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(row.total);
+
+            }
+        );
+
+    });
+
+}
+
+// Get total unique contacts
+function getTotalContacts() {
+
+    return new Promise((resolve, reject) => {
+
+        db.get(
+            "SELECT COUNT(DISTINCT sender) AS total FROM chats",
+            (err, row) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(row.total);
+
+            }
+        );
+
+    });
+
+}
+
 module.exports = {
     db,
     saveMessage,
-    getRecentMessages
+    getRecentMessages,
+    getTotalMessages,
+    getTotalContacts
 };
+
+getLatestMessages()

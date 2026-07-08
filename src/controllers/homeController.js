@@ -1,6 +1,5 @@
+const path = require("path");
+
 exports.home = (req, res) => {
-    res.json({
-        success: true,
-        message: "HumanAI API Running 🚀"
-    });
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 };
