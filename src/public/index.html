@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>HumanAI Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -14,48 +18,93 @@
 
         <h1>🤖 HumanAI Dashboard</h1>
 
+        <!-- Search Box -->
+        <div class="searchBox">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔍 Search messages..."
+            >
+
+        </div>
+
+        <!-- Search Results -->
+        <div class="searchResults">
+
+            <h2>🔍 Search Results</h2>
+
+            <div id="searchResults"></div>
+
+        </div>
+
+        <!-- Dashboard Cards -->
         <div class="cards">
 
             <div class="card">
+
                 <h2>📨 Messages</h2>
+
                 <h1 id="messages">0</h1>
+
             </div>
 
             <div class="card">
+
                 <h2>👥 Contacts</h2>
+
                 <h1 id="contacts">0</h1>
+
             </div>
 
             <div class="card">
+
                 <h2>🤖 AI</h2>
+
                 <h1 id="ai">Online</h1>
+
             </div>
 
             <div class="card">
+
                 <h2>💾 Database</h2>
+
                 <h1 id="database">Connected</h1>
+
             </div>
+
+        </div>
+
+        <!-- Latest Messages -->
+        <div class="latestMessages">
+
+            <h2>📨 Latest Messages</h2>
+
+            <div id="latestMessages"></div>
+
+        </div>
+
+        <div class="contactsSection">
+
+    <h2>👥 Contacts</h2>
+
+    <div id="contactsList"></div>
+
+</div>
+
+        <!-- AI Suggestions -->
+        <div class="latestReplies">
+
+            <h2>🤖 AI Suggestions</h2>
+
+            <div id="latestReplies"></div>
 
         </div>
 
     </div>
 
-    <div class="latestMessages">
-
-    <h2>📨 Latest Messages</h2>
-
-    <div id="latestMessages"></div>
-
-</div>
-<div class="latestReplies">
-
-    <h2>🤖 AI Suggestions</h2>
-
-    <div id="latestReplies"></div>
-
-</div>
-
     <script src="script.js"></script>
 
 </body>
+
 </html>

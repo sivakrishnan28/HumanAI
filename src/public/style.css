@@ -6,103 +6,128 @@
 }
 
 body{
-
-    background:#0f172a;
+    background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
     color:white;
-
+    min-height:100vh;
 }
 
 .container{
-
-    width:90%;
+    width:95%;
+    max-width:1400px;
     margin:auto;
-    padding-top:40px;
-
+    padding:30px;
 }
 
 h1{
-
     text-align:center;
     margin-bottom:40px;
-
 }
 
 .cards{
-
     display:grid;
-
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
     gap:20px;
-
 }
 
 .card{
-
-    background:#1e293b;
-
-    padding:30px;
-
-    border-radius:15px;
-
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:25px;
     text-align:center;
-
-    box-shadow:0 0 20px rgba(0,0,0,.3);
-
-    transition:.3s;
-
+    transition:0.3s;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
 .card:hover{
-
-    transform:translateY(-8px);
-
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
 
 .latestMessages{
-
     margin-top:40px;
-
     background:#1e293b;
-
     padding:25px;
-
     border-radius:15px;
-
 }
 
 .message{
-
     padding:12px;
-
     margin-top:10px;
+    border-bottom:1px solid #334155;
+}
 
-    border-bottom:1px solid #3a5d91;
+.message p{
+    margin:6px 0;
+}
 
-}.latestReplies{
+.latestReplies{
+    margin-top:40px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+}
+
+.reply{
+    padding:12px;
+    margin-top:10px;
+    border-bottom:1px solid #334155;
+}
+
+.reply p{
+    margin:6px 0;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+small{
+    color:#94a3b8;
+}
+.searchBox{
+    margin:25px 0;
+}
+
+.searchBox input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+#searchResults{
+    margin-top:20px;
+}
+
+.contactsSection{
 
     margin-top:40px;
-
     background:#1e293b;
-
     padding:25px;
-
     border-radius:15px;
 
 }
 
-.reply{
+.contact{
 
-    padding:12px;
-
-    margin-top:10px;
-
+    padding:15px;
     border-bottom:1px solid #334155;
 
 }
 
-.reply p{
+.contact:hover{
 
-    margin:6px 0;
+    background:#334155;
+    cursor:pointer;
+
+}
+
+.contact p{
+
+    margin:5px 0;
 
 }

@@ -1,6 +1,9 @@
 const {
     getTotalMessages,
-    getTotalContacts
+    getTotalContacts,
+    getTodayMessages,
+    getTotalAIReplies,
+    getMostActiveContact
 } = require("../database/database");
 
 exports.dashboard = async (req, res) => {
@@ -23,6 +26,7 @@ exports.dashboard = async (req, res) => {
             contacts: totalContacts
 
         });
+
 
     } catch (error) {
 

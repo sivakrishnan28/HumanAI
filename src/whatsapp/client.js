@@ -80,6 +80,11 @@ async function startWhatsApp() {
 
         const sender = msg.key.remoteJid;
 
+        const contactName =
+        msg.pushName ||
+        msg.notifyName ||
+        sender.split("@")[0];
+
         const text =
             msg.message?.conversation ||
             msg.message?.extendedTextMessage?.text ||
@@ -93,7 +98,8 @@ async function startWhatsApp() {
 
         console.log("\n======================================");
         console.log("📩 New Message");
-        console.log("👤 From :", sender);
+        console.log("👤 Name :", contactName);
+        console.log("📱 Sender :", sender);
         console.log("💬 Text :", text);
 
         // Save incoming message

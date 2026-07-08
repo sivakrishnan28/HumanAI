@@ -171,7 +171,7 @@ function getLatestMessages() {
              WHERE sender NOT LIKE '%newsletter%'
              AND sender != 'status@broadcast'
              ORDER BY id DESC
-             LIMIT 10`,
+             LIMIT 20`,
             (err, rows) => {
 
                 if (err) {
@@ -214,6 +214,135 @@ function getLatestAIReplies() {
 
 }
 
+function searchMessages(keyword) {
+
+    return new Promise((resolve, reject) => {
+
+        db.all(
+            `SELECT sender, message, created_at
+             FROM chats
+             WHERE message LIKE ?
+             ORDER BY id DESC
+             LIMIT 20`,
+            [`%${keyword}%`],
+            (err, rows) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(rows);
+
+            }
+        );
+
+    });
+
+}
+
+function getTodayMessages() {
+
+    return new Promise((resolve, reject) => {
+
+        db.get(
+            `SELECT COUNT(*) AS total
+             FROM chats
+             WHERE DATE(created_at)=DATE('now','localtime')`,
+            (err, row) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(row.total);
+
+            }
+        );
+
+    });
+
+}
+
+function getTotalAIReplies() {
+
+    return new Promise((resolve, reject) => {
+
+        db.get(
+            `SELECT COUNT(*) AS total
+             FROM ai_replies`,
+            (err, row) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(row.total);
+
+            }
+        );
+
+    });
+
+}
+
+function getMostActiveContact() {
+
+    return new Promise((resolve, reject) => {
+
+        db.get(
+            `SELECT sender,
+                    COUNT(*) AS total
+             FROM chats
+             GROUP BY sender
+             ORDER BY total DESC
+             LIMIT 1`,
+            (err, row) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(row);
+
+            }
+        );
+
+    });
+
+}
+
+function getContacts() {
+
+    return new Promise((resolve, reject) => {
+
+        db.all(
+            `SELECT
+                sender,
+                COUNT(*) AS total,
+                MAX(created_at) AS lastMessage
+             FROM chats
+             GROUP BY sender
+             ORDER BY lastMessage DESC`,
+            (err, rows) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(rows);
+
+            }
+        );
+
+    });
+
+}
+
 module.exports = {
     db,
     saveMessage,
@@ -222,5 +351,10 @@ module.exports = {
     getTotalMessages,
     getTotalContacts,
     getLatestMessages,
-    getLatestAIReplies
+    getLatestAIReplies,
+    searchMessages,
+    getTodayMessages,
+    getTotalAIReplies,
+    getMostActiveContact,
+    getContacts
 };
